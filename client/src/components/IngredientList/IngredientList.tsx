@@ -1,18 +1,18 @@
 import React from 'react';
 import { Box, IconButton, List, ListItem, MenuItem, Select, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { FormValuesType, IngredientType } from "../AddRecipeModal/AddRecipeModal";
+import { RecipeType, IngredientType } from "../AddRecipeModal/AddRecipeModal";
 
 const unitsList = ['шт', 'кг', 'гр', 'л', 'мл'];
 
 type IngredientListProps = {
-    formValues: FormValuesType;
+    formValues: RecipeType;
     updateFormsValues: (updateFormsValues: IngredientType[]) => void;
 };
 
 const IngredientList = ({formValues, updateFormsValues} : IngredientListProps): JSX.Element => {
 
-    const editIngredient = (ev, nameOfIngredient) => {
+    const editIngredient = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | (Event & { target: { value: string; name: string; }; }), nameOfIngredient: string) => {
         const { name, value } = ev.target;
         const selectedIngredient = formValues.ingredients.find(el => el.name === nameOfIngredient);
         if (selectedIngredient) {
@@ -23,7 +23,7 @@ const IngredientList = ({formValues, updateFormsValues} : IngredientListProps): 
         };
       };
     
-      const deleteIngredient = (nameOfIngredient) => {
+      const deleteIngredient = (nameOfIngredient: string) => {
         const indx = formValues.ingredients.findIndex(el => el.name === nameOfIngredient);
         formValues.ingredients.splice(indx, 1);
         updateFormsValues(formValues.ingredients)
@@ -58,7 +58,7 @@ const IngredientList = ({formValues, updateFormsValues} : IngredientListProps): 
                         variant="standard"
                         sx={{ width: '50px' }}
                       >
-                        {unitsList.map(el => <MenuItem value={el}>{el}</MenuItem>)}
+                        {unitsList.map(el => <MenuItem key={el} value={el}>{el}</MenuItem>)}
                       </Select>
                     </Box>
                       <IconButton edge="end" aria-label="delete">
@@ -72,6 +72,6 @@ const IngredientList = ({formValues, updateFormsValues} : IngredientListProps): 
             :
             null
         }
-        </>
+      </>
     )};
 export default IngredientList;

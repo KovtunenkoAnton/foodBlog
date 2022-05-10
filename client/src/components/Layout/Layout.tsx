@@ -18,81 +18,26 @@ import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import BrunchDiningIcon from '@mui/icons-material/BrunchDining';
 import { Button, Collapse, ListItemButton } from '@mui/material';
 import { useRecipesContext } from '../context/recipesContext';
-import AddRecipeModal from '../AddRecipeModal/AddRecipeModal';
+import AddRecipeModal, { mealTimeList, RecipeType } from '../AddRecipeModal/AddRecipeModal';
+import DrawerBox from '../DrawerBox/DrawerBox';
 
 const drawerWidth = 240;
 
 function Layout(props) {
-  const { window } = props;
+  // const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [open, setOpen] = React.useState(true);
 
-  const {recipes, addRecipe} = useRecipesContext();
+  const [curRecipe, setCurRecipe] = React.useState<RecipeType | undefined>(undefined);
+  const {recipes} = useRecipesContext();
   
+  if(typeof curRecipe === undefined && recipes.length) setCurRecipe(recipes[0]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const drawer = (
-    <div>
-      <Toolbar />
-      <Divider />
-      <List>
-        {['Завтрак'].map((text, index) => (
-          <ListItem sx={{marginBottom: "10px"}} button key={text}>
-            <ListItemIcon>
-              {<EmojiFoodBeverageIcon/>}
-            </ListItemIcon>
-            <ListItemText>
-                <Typography sx={{fontWeight: "bold"}}>
-                    {text}
-                </Typography>
-            </ListItemText>
-          </ListItem>
-        ))}
-          <Collapse in={open}>
-            {recipes.map(recipe => 
-            <ListItemButton key={recipe.title}><span style={{marginLeft: "55px"}}>{recipe.title}</span></ListItemButton>)}
-          </Collapse>
-      </List>
-      <Divider />
-      <List>
-        {['Обед'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {<DinnerDiningIcon/>}
-            </ListItemIcon>
-            <ListItemText>
-                <Typography sx={{fontWeight: "bold"}}>
-                    {text}
-                </Typography>
-            </ListItemText>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Ужин'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {<BrunchDiningIcon/>}
-            </ListItemIcon>
-            <ListItemText>
-                <Typography sx={{fontWeight: "bold"}}>
-                    {text}
-                </Typography>
-            </ListItemText>
-          </ListItem>
-        ))}
-      </List>
-      <List sx={{ textAlign: "center" }}>
-      <AddRecipeModal/>
-      </List>
-    </div>
-  );
-
-  const container = window !== undefined ? () => window().document.body : undefined;
+  // const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -125,7 +70,7 @@ function Layout(props) {
         aria-label="mailbox folders"
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
+        {/* <Drawer
           container={container}
           variant="temporary"
           open={mobileOpen}
@@ -139,7 +84,7 @@ function Layout(props) {
           }}
         >
           {drawer}
-        </Drawer>
+        </Drawer> */}
         <Drawer
           variant="permanent"
           sx={{
@@ -148,7 +93,7 @@ function Layout(props) {
           }}
           open
         >
-          {drawer}
+          <DrawerBox recipesList={recipes} setCurRecipe={setCurRecipe} />
         </Drawer>
       </Box>
       <Box
@@ -156,19 +101,23 @@ function Layout(props) {
         sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
-        <Typography sx={{fontWeight: "bold", left: "50%", position: "absolute"}} paragraph>
-            {recipes[0]?.title}
-        </Typography>
-        <Typography paragraph>
+        {
+          curRecipe && 
+            <>
+          <Typography sx={{ fontWeight: "bold", left: "50%", position: "absolute" }} paragraph>
+              {curRecipe.title}
+          </Typography>
+          <Typography paragraph>
             <ul>
-            {recipes[0]?.ingredients.map(ingredient => 
-                <li key={ingredient.index}>{ingredient}</li>
-                )}
+              {curRecipe.ingredients.map(ingredient => <li key={ingredient.name}>{ingredient.name} - {ingredient.number} {ingredient.units}</li>)}
             </ul>
-        </Typography>
-        <Typography paragraph>
-            {recipes[0]?.recipeText}
-        </Typography>
+          </Typography>
+          <Typography paragraph>
+            {curRecipe.recipeText}
+          </Typography>
+          </>
+        }
+
       </Box>
     </Box>
   );

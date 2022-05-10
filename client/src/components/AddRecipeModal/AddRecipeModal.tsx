@@ -7,10 +7,11 @@ import { Icon, IconButton, List, ListItem, ListItemText, MenuItem, Select, TextF
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import IngridientList from '../IngredientList/IngredientList';
+import { useRecipesContext } from '../context/recipesContext';
 
 const unitsList = ['шт', 'кг', 'гр', 'л', 'мл'];
 
-const mealTimeList = ['Завтрак', 'Обед', 'Ужин'];
+export const mealTimeList = ['Завтрак', 'Обед', 'Ужин'];
 
 const style = {
     position: 'absolute',
@@ -31,11 +32,12 @@ const style = {
     units: string;
   }
 
-  export type FormValuesType = {
+  export type RecipeType = {
     title: string, 
     timeOfMeal: string,
     ingredients: IngredientType[], 
-    recipeText: string
+    recipeText: string,
+    id?: string
   }
 
 const AddRecipeModal = () => {
@@ -43,7 +45,9 @@ const AddRecipeModal = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [formValues, setFormValues] = React.useState<FormValuesType>({
+  const {addRecipe} = useRecipesContext();
+
+  const [formValues, setFormValues] = React.useState<RecipeType>({
     title: '',
     timeOfMeal: mealTimeList[0],
     ingredients: [],
@@ -57,8 +61,6 @@ const AddRecipeModal = () => {
   });
 
   const [mealTime, setMealTime] = React.useState<string>(mealTimeList[0]);
-
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -95,13 +97,26 @@ const AddRecipeModal = () => {
 
   const handleSelectMealTime = (e) => {
     setMealTime(e.target.value);
-  }
+    handleInputChange(e);
+  };
 
   const updateFormsValues = (ingredientsArr: IngredientType[]) => {
     setFormValues({
       ...formValues,
       ingredients: ingredientsArr
     });
+  };
+
+  const uploadRecipe = () => {
+    addRecipe(formValues);
+    setFormValues({
+      title: '',
+      timeOfMeal: mealTimeList[0],
+      ingredients: [],
+      recipeText: ''
+    });
+    setMealTime(mealTimeList[0]);
+    handleClose();
   };
   
   return (
@@ -138,7 +153,7 @@ const AddRecipeModal = () => {
                 sx={{ width: "80%", marginRight: "10px"}}
               />
               <Select
-                name="units"
+                name="timeOfMeal"
                 labelId="demo-select-small"
                 id="demo-select-small"
                 value={mealTime}
@@ -146,7 +161,7 @@ const AddRecipeModal = () => {
                 onChange={ev => handleSelectMealTime(ev)}
                 variant="outlined"
               >
-                {mealTimeList.map(el => <MenuItem value={el}>{el}</MenuItem>)}
+                {mealTimeList.map(el => <MenuItem key={el} value={el}>{el}</MenuItem>)}
               </Select>
               </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -172,16 +187,17 @@ const AddRecipeModal = () => {
               }
             </Box>
             <TextField 
-              // sx={{ height: "200px"}}
               value={formValues.recipeText}
               name="recipeText"
               id="outlined-basic" 
               label="Текст рецепта" 
               variant="outlined"
               onChange={handleInputChange}
+              multiline
+              rows={12}
 
             />
-            <Button>Загрузить рецепт</Button>
+            <Button onClick={uploadRecipe}>Загрузить рецепт</Button>
           </Box>
         </Box>
       </Modal>
