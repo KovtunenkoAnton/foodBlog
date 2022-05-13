@@ -3,7 +3,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
-import { Icon, IconButton, List, ListItem, ListItemText, MenuItem, Select, TextField } from '@mui/material';
+import { Icon, IconButton, List, ListItem, ListItemText, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import IngridientList from '../IngredientList/IngredientList';
@@ -12,6 +13,10 @@ import { useRecipesContext } from '../context/recipesContext';
 const unitsList = ['шт', 'кг', 'гр', 'л', 'мл'];
 
 export const mealTimeList = ['Завтрак', 'Обед', 'Ужин'];
+
+const Input = styled('input')({
+  display: 'none',
+});
 
 const style = {
     position: 'absolute',
@@ -95,7 +100,7 @@ const AddRecipeModal = () => {
     }
   };
 
-  const handleSelectMealTime = (e) => {
+  const handleSelectMealTime = (e: SelectChangeEvent<string>) => {
     setMealTime(e.target.value);
     handleInputChange(e);
   };
@@ -118,6 +123,15 @@ const AddRecipeModal = () => {
     setMealTime(mealTimeList[0]);
     handleClose();
   };
+
+  const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('EEEE', e);
+    if (e?.target?.files) {
+      const images = e.target.files[0];
+      const formData = new FormData();
+      formData.append('userPics', images, e.target.files[0].name);
+    }
+  }
   
   return (
     <>
@@ -195,8 +209,13 @@ const AddRecipeModal = () => {
               onChange={handleInputChange}
               multiline
               rows={12}
-
             />
+            <label htmlFor="contained-button-file">
+              <Input onChange={(e) => handleAddImage(e)} accept="image/*" id="contained-button-file" multiple type="file" />
+              <Button variant="contained" component="span">
+                Upload
+              </Button>
+            </label>
             <Button onClick={uploadRecipe}>Загрузить рецепт</Button>
           </Box>
         </Box>

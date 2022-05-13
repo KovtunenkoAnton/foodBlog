@@ -26,7 +26,6 @@ const drawerWidth = 240;
 function Layout(props) {
   // const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [open, setOpen] = React.useState(true);
 
   const [curRecipe, setCurRecipe] = React.useState<RecipeType | undefined>(undefined);
   const {recipes} = useRecipesContext();
@@ -113,7 +112,7 @@ function Layout(props) {
             </ul>
           </Typography>
           <Typography paragraph>
-            {curRecipe.recipeText}
+            {curRecipe?.recipeText.split('\n').map(el => <Typography key={el}>{el}</Typography>)}
           </Typography>
           </>
         }

@@ -18,9 +18,7 @@ const RecipesProvider = ({ children }) => {
 
     const addRecipe =((recipe: RecipeType) => {
           axios.post('/', recipe)
-          .then(res => {
-              console.log(res);
-              
+          .then(res => {  
               setRecipes(prev => [...prev, res.data])
             })
     });
