@@ -3,23 +3,26 @@ import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
+// import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+// import List from '@mui/material/List';
+// import ListItem from '@mui/material/ListItem';
+// import ListItemIcon from '@mui/material/ListItemIcon';
+// import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import EmojiFoodBeverageIcon from '@mui/icons-material/EmojiFoodBeverage';
-import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
-import BrunchDiningIcon from '@mui/icons-material/BrunchDining';
-import { Button, Collapse, ListItemButton } from '@mui/material';
+// import EmojiFoodBeverageIcon from '@mui/icons-material/EmojiFoodBeverage';
+// import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
+// import BrunchDiningIcon from '@mui/icons-material/BrunchDining';
+// import { Button, Collapse, ListItemButton } from '@mui/material';
 import { useRecipesContext } from '../context/recipesContext';
-import AddRecipeModal, { mealTimeList, RecipeType } from '../AddRecipeModal/AddRecipeModal';
+import { RecipeType } from '../AddRecipeModal/AddRecipeModal';
+// import AddRecipeModal, { mealTimeList, RecipeType } from '../AddRecipeModal/AddRecipeModal';
 import DrawerBox from '../DrawerBox/DrawerBox';
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from 'react-responsive-carousel';
 
 const drawerWidth = 240;
 
@@ -102,18 +105,56 @@ function Layout(props) {
         <Toolbar />
         {
           curRecipe && 
-            <>
-          <Typography sx={{ fontWeight: "bold", left: "50%", position: "absolute" }} paragraph>
+          <>
+          {
+            curRecipe.title &&
+            <Typography sx={{ fontWeight: "bold", left: "50%", position: "absolute" }} paragraph>
               {curRecipe.title}
-          </Typography>
-          <Typography paragraph>
-            <ul>
-              {curRecipe.ingredients.map(ingredient => <li key={ingredient.name}>{ingredient.name} - {ingredient.number} {ingredient.units}</li>)}
-            </ul>
-          </Typography>
-          <Typography paragraph>
-            {curRecipe?.recipeText.split('\n').map(el => <Typography key={el}>{el}</Typography>)}
-          </Typography>
+            </Typography>
+          }
+
+          {
+            curRecipe.ingredients.length &&
+            <div>
+              <ul>
+                {curRecipe.ingredients.map(ingredient => <li key={ingredient.name}>{ingredient.name} - {ingredient.number} {ingredient.units}</li>)}
+              </ul>
+            </div>
+          }
+
+          {
+            curRecipe.recipeText &&
+            <Typography paragraph>
+              {curRecipe.recipeText.split('\n').map(el => <Typography key={el}>{el}</Typography>)}
+            </Typography>
+          }
+
+          {
+            curRecipe.images.length &&
+
+            // <Box sx={{ display: 'flex' }}>
+            <Box sx={{display: 'flex',   width: '30%', height: '30%'}}>
+              <Carousel showArrows={true} showThumbs={true}>
+                {              
+                  curRecipe.images.map((image, indx) => 
+                  <>
+                      <div>
+                      <img 
+                        alt='' 
+                        // key={image} 
+                        src={'uploads/' + image} 
+                        // width='50px' 
+                        // height='50px' 
+                        // style={{ margin: '8px' }}
+                      />
+                      </div>
+                      <p>{`${indx + 1}`}</p>
+                  </>
+                  )
+                }
+              </Carousel>
+            </Box>
+          }
           </>
         }
 

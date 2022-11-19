@@ -69,7 +69,7 @@ const IngredientList = ({formValues, updateFormsValues} : IngredientListProps): 
               }
               
             </List>
-            :
+          :
             null
         }
       </>

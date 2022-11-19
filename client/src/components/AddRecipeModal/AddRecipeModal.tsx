@@ -1,11 +1,23 @@
+// import React, { ChangeEventHandler } from 'react';
 import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
-import { Icon, IconButton, List, ListItem, ListItemText, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
+import { 
+  // Icon, 
+  IconButton, 
+  // imageListClasses, 
+  List, 
+  // ListItem, 
+  // ListItemText, 
+  MenuItem, 
+  Select, 
+  SelectChangeEvent, 
+  TextField 
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
+// import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import IngridientList from '../IngredientList/IngredientList';
 import { useRecipesContext } from '../context/recipesContext';
@@ -19,51 +31,58 @@ const Input = styled('input')({
 });
 
 const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 800,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-    textAllign: "center"
-  };
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+  textAllign: "center"
+};
 
-  export type IngredientType = {
-    name: string;
-    number: number;
-    units: string;
-  }
+const formValuesInitState: RecipeType = {
+  title: '',
+  timeOfMeal: mealTimeList[0],
+  ingredients: [],
+  recipeText: '',
+}
 
-  export type RecipeType = {
-    title: string, 
-    timeOfMeal: string,
-    ingredients: IngredientType[], 
-    recipeText: string,
-    id?: string
-  }
+const ingredientInitState: IngredientType = {
+  name: '', 
+  number: 1, 
+  units: unitsList[0]
+}
+
+export type IngredientType = {
+  name: string;
+  number: number;
+  units: string;
+}
+
+export type RecipeType = {
+  title: string, 
+  timeOfMeal: string,
+  ingredients: IngredientType[], 
+  recipeText: string,
+  id?: string,
+  images?: string[];
+}
 
 const AddRecipeModal = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const {addRecipe} = useRecipesContext();
+  const { addRecipe } = useRecipesContext();
 
-  const [formValues, setFormValues] = React.useState<RecipeType>({
-    title: '',
-    timeOfMeal: mealTimeList[0],
-    ingredients: [],
-    recipeText: ''
-  });
+  const [formValues, setFormValues] = React.useState<RecipeType>(formValuesInitState);
 
-  const [ingredient, setIngredient] = React.useState<IngredientType>({
-    name: '', 
-    number: 1, 
-    units: unitsList[0]
-  });
+  const [imagesList, setImagesList] = React.useState<FileList>(null);
+  
+  const [ingredient, setIngredient] = React.useState<IngredientType>(ingredientInitState);
 
   const [mealTime, setMealTime] = React.useState<string>(mealTimeList[0]);
 
@@ -78,7 +97,7 @@ const AddRecipeModal = () => {
   const handleInputIngredientChange = (e) => {
     const { name, value } = e.target;
     setIngredient({
-      ... ingredient,
+      ...ingredient,
       [name]: value
     });
   };
@@ -92,11 +111,7 @@ const AddRecipeModal = () => {
           ingredients: [...formValues.ingredients, ingredient],
         });
       }
-      setIngredient({
-        name: '',
-        number: 1,
-        units: unitsList[0]
-      });
+      setIngredient(ingredientInitState);
     }
   };
 
@@ -113,23 +128,18 @@ const AddRecipeModal = () => {
   };
 
   const uploadRecipe = () => {
-    addRecipe(formValues);
-    setFormValues({
-      title: '',
-      timeOfMeal: mealTimeList[0],
-      ingredients: [],
-      recipeText: ''
-    });
+    addRecipe(formValues, imagesList);
+    setFormValues(formValuesInitState);
+    setImagesList(null)
     setMealTime(mealTimeList[0]);
     handleClose();
   };
 
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('EEEE', e);
-    if (e?.target?.files) {
-      const images = e.target.files[0];
-      const formData = new FormData();
-      formData.append('userPics', images, e.target.files[0].name);
+    const images = e.target.files;
+    if (images.length) {
+      setImagesList(e.target.files)
+      // const imagePath = URL.createObjectURL(images)
     }
   }
   
@@ -172,7 +182,7 @@ const AddRecipeModal = () => {
                 id="demo-select-small"
                 value={mealTime}
                 label="Units"
-                onChange={ev => handleSelectMealTime(ev)}
+                onChange={handleSelectMealTime}
                 variant="outlined"
               >
                 {mealTimeList.map(el => <MenuItem key={el} value={el}>{el}</MenuItem>)}
@@ -210,6 +220,11 @@ const AddRecipeModal = () => {
               multiline
               rows={12}
             />
+            {/* {
+              imagesList.length &&
+              imagesList.map(image => <img src={image} key={image} alt="" width="50" height="50"></img>)
+            } */}
+
             <label htmlFor="contained-button-file">
               <Input onChange={(e) => handleAddImage(e)} accept="image/*" id="contained-button-file" multiple type="file" />
               <Button variant="contained" component="span">
